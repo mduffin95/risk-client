@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height>
+  <div>
     <div class="map-container">
       <img
         class="map"
@@ -12,11 +12,11 @@
         :territory="territory"
       />
     </div>
-
-  </v-container>
+  </div>
 </template>
 
 <script>
+import * as axios from "axios";
 import Marker from "./components/Marker.vue";
 
 export default {
@@ -31,10 +31,21 @@ export default {
           top: 50,
           left: 50,
           units: 1,
-          color: "red"
-        }
-        ],
+          color: "red",
+        },
+      ],
     };
+  },
+  mounted() {
+    axios
+      .get('http://localhost:8080/api/game')
+      .then((response) => {
+        console.log(response.data);
+        this.territories = response.data
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>
@@ -49,13 +60,13 @@ export default {
   margin-top: 60px;
 }
 .map-container {
-    position: relative;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 80%;
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
 }
 .map {
-    width: 100%;
+  width: 100%;
 }
 </style>
