@@ -5,9 +5,9 @@
       <p>Phase: {{ gameModel.phase }}</p>
       <p v-if="gameModel.phase == 'DRAFT' || gameModel.phase == 'ALLDRAFT'">Units to place: {{ gameModel.unitsToPlace }}</p>
       <p>Error: {{ gameModel.error }}</p>
-      <!-- <o-button size="medium" variant="primary" @click="moveModalActive = true">
-        Open modal (Component)
-      </o-button> -->
+      <o-button size="medium" variant="primary" @click="endTurn()">
+        End Turn
+      </o-button>
       <!-- <o-modal v-model:active="moveModalActive">
         <move-modal v-model:units="unitsToMove" @close="moveModalActive = false"/>
       </o-modal> -->
@@ -61,10 +61,10 @@ export default {
           this.attack(territory);
           break;
         case "MOVE":
-          // this.modal();
-          this.modal()
+          this.modal();
           break;
         case "FORTIFY":
+          this.fortify(territory);
           break;
         default:
           console.log("No phase for " + this.gameModel.phase)
@@ -109,6 +109,37 @@ export default {
         this.lastSelected = territory;
       }
     },
+    fortify(territory) {
+      const currentPlayer = this.gameModel.currentPlayer;
+      if (this.lastSelected != null && this.lastSelected.player == currentPlayer && territory.player == currentPlayer) {
+        this.$oruga.modal.open({
+          parent: this,
+          component: MoveModal,
+          trapFocus: true,
+          events: {
+            "move-units": (units) => this.fortifyWithUnits(this.lastSelected.name, territory.name, units)
+          },
+        })
+      } else if (territory.player == currentPlayer) {
+        this.lastSelected = territory;
+      }
+    },
+    fortifyWithUnits(from, to, units) {
+      const fortify_data = { 
+        from: from,
+        to: to,
+        units: units
+      };
+      this.lastSelected = null;
+      axios
+        .post("http://localhost:8080/api/fortify", fortify_data)
+        .then((response) => {
+          this.gameModel = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     move(unitsToMove) {
       // this.moveModalActive = true;
       console.log(unitsToMove)
@@ -132,6 +163,16 @@ export default {
           "move-units": this.move
         },
       })
+    },
+    endTurn() {
+      axios
+        .get("http://localhost:8080/api/end")
+        .then((response) => {
+          this.gameModel = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   },
   mounted() {

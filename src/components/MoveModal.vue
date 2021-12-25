@@ -21,7 +21,7 @@
         </o-field>
       </section>
       <footer class="modal-card-foot">
-        <o-button type="button" @click="$emit('move-units', units)">Move</o-button>
+        <o-button type="button" @click="clicked()">Move</o-button>
       </footer>
     </div>
   </form>
@@ -36,6 +36,12 @@ export default {
       units: 0
     }
   },
+  methods: {
+    clicked() {
+      this.$emit('move-units', this.units);
+      this.$emit('close')
+    }
+  }
 };
 </script>
 
