@@ -4,7 +4,7 @@
       <p>Current player: {{ gameModel.currentPlayer }}</p>
       <p>Phase: {{ gameModel.phase }}</p>
       <p v-if="gameModel.phase == 'DRAFT' || gameModel.phase == 'ALLDRAFT'">Units to place: {{ gameModel.unitsToPlace }}</p>
-      <p>Error: {{ gameModel.error }}</p>
+      <p v-if="gameModel.error != null">Error: {{ gameModel.error }}</p>
       <o-button size="medium" variant="primary" @click="endTurn()">
         End Turn
       </o-button>

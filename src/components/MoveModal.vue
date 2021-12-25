@@ -1,7 +1,7 @@
 <template>
   <form action="">
     <div class="modal-card" style="width: auto">
-      <header class="modal-card-head">
+      <!-- <header class="modal-card-head">
         <p class="modal-card-title">Units</p>
         <o-icon
           clickable
@@ -9,9 +9,8 @@
           icon="times"
           @click="$emit('close')"
         />
-      </header>
+      </header> -->
       <section class="modal-card-body">
-        {{ units }}
         <o-field label="Units">
           <o-input
             type="number"
