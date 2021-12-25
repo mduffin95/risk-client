@@ -1,7 +1,8 @@
 <template>
   <div :id="territory.name"
     :style="'top: ' + territory.top + '%; left: ' + territory.left + '%; border-color: ' + territory.color"
-    class="circle option"
+    class="circle"
+    :class="{ optionSelected: selected }"
   >{{ territory.units }}</div>
 </template>
 
@@ -9,7 +10,8 @@
 export default {
   name: 'Marker',
   props: {
-    territory: Object
+    territory: Object,
+    selected: Boolean
   }
 }
 </script>
@@ -26,12 +28,10 @@ export default {
     line-height: calc(3vw - 6px);
     font-size: 1vw;
     border: 3px solid;
-}
-.option {
     background: white;
 }
 
 .optionSelected {
-    background: cyan;
+    background: gainsboro;
 }
 </style>
