@@ -1,6 +1,10 @@
 <template>
-  <o-button size="medium" variant="primary" @click="newGame()">
-    New Game
+  <div>{{ id }}</div>
+  <div v-for="(player, index) in model.players" :key="'player-' + index">
+    {{ player }}
+  </div>
+  <o-button size="medium" variant="primary" @click="statGame()">
+    Start
   </o-button>
 </template>
 
@@ -8,23 +12,39 @@
 import * as axios from "axios";
 
 export default {
+  data() {
+    return {
+      model: {},
+    };
+  },
+  props: {
+    playerName: String,
+    id: String
+  },
   methods: {
-    newGame() {
+    startGame() {
       axios
-        .get("http://localhost:8080/api/newgame")
-        .then((response) => {
-          console.log(response.data);
-          const id = response.data;
-
-          this.$router.push({
-            name: "game",
-            params: { id: id }
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      .get("http://localhost:8080/api/" + this.id + "/start")
+      .then((response) => {
+        console.log(response.data);
+        this.model = response.data;
+        this.$router.push({ name: "game" , params: { id: this.id }});
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     },
+  },
+  mounted() {
+    axios
+      .post("http://localhost:8080/api/" + this.id + "/join", { player: this.playerName })
+      .then((response) => {
+        console.log(response.data);
+        this.model = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
 </script>

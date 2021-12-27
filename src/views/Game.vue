@@ -10,9 +10,6 @@
       <o-button size="medium" variant="primary" @click="endTurn()">
         End Turn
       </o-button>
-      <!-- <o-modal v-model:active="moveModalActive">
-        <move-modal v-model:units="unitsToMove" @close="moveModalActive = false"/>
-      </o-modal> -->
     </div>
     <div class="map-container">
       <img
@@ -43,14 +40,13 @@ export default {
     Marker,
   },
   props: {
-    id: String
+    // name: String, // player name
+    id: String // game ID
   },
   data() {
     return {
       gameModel: {},
       lastSelected: null,
-      // moveModalActive: false,
-      // unitsToMove: 3
     };
   },
   methods: {
@@ -60,7 +56,6 @@ export default {
         case "ALLDRAFT":
           this.draft(territory);
           break;
-
         case "ATTACK":
           this.attack(territory);
           break;
