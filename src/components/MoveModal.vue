@@ -1,15 +1,6 @@
 <template>
   <form action="">
     <div class="modal-card" style="width: auto">
-      <!-- <header class="modal-card-head">
-        <p class="modal-card-title">Units</p>
-        <o-icon
-          clickable
-          native-type="button"
-          icon="times"
-          @click="$emit('close')"
-        />
-      </header> -->
       <section class="modal-card-body">
         <o-field label="Units">
           <o-input
