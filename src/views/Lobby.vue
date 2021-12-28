@@ -1,7 +1,7 @@
 <template>
   <div>{{ id }}</div>
   <div v-for="(player, index) in model.players" :key="'player-' + index">
-    {{ player }}
+    {{ player.name }}
   </div>
   <o-button size="medium" variant="primary" @click="startGame()">
     Start
@@ -34,13 +34,28 @@ export default {
         console.log(error);
       });
     },
+    pollLobby() {
+      axios
+        .post("http://localhost:8080/api/" + this.id + "/lobby", this.model)
+        .then((response) => {
+          this.model = response.data;
+          if (this.model.hasStarted) {
+            this.$router.push({ name: "game" , params: { id: this.id }});
+          } else {
+            this.pollLobby();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
   mounted() {
     axios
       .post("http://localhost:8080/api/" + this.id + "/join", { player: this.playerName })
       .then((response) => {
-        console.log(response.data);
         this.model = response.data;
+        this.pollLobby();
       })
       .catch((error) => {
         console.log(error);

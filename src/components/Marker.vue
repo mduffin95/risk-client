@@ -1,6 +1,6 @@
 <template>
   <div :id="territory.name"
-    :style="'top: ' + territory.top + '%; left: ' + territory.left + '%; border-color: ' + territory.color"
+    :style="'top: ' + territory.top + '%; left: ' + territory.left + '%; border-color: ' + territory.player.color"
     class="circle"
     :class="{ optionSelected: selected }"
   >{{ territory.units }}</div>

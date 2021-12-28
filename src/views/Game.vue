@@ -86,8 +86,8 @@ export default {
       const currentPlayer = this.gameModel.currentPlayer;
       if (
         this.lastSelected != null &&
-        this.lastSelected.player == currentPlayer &&
-        territory.player != currentPlayer
+        this.lastSelected.player.name == currentPlayer &&
+        territory.player.name != currentPlayer
       ) {
         console.log("ATTACK");
         const attack_data = {
@@ -106,7 +106,7 @@ export default {
         if (this.gameModel.phase == "MOVE") {
           this.modal();
         }
-      } else if (territory.player == currentPlayer) {
+      } else if (territory.player.name == currentPlayer) {
         this.lastSelected = territory;
       }
     },
@@ -114,8 +114,8 @@ export default {
       const currentPlayer = this.gameModel.currentPlayer;
       if (
         this.lastSelected != null &&
-        this.lastSelected.player == currentPlayer &&
-        territory.player == currentPlayer
+        this.lastSelected.player.name == currentPlayer &&
+        territory.player.name == currentPlayer
       ) {
         this.$oruga.modal.open({
           parent: this,
@@ -130,7 +130,7 @@ export default {
               ),
           },
         });
-      } else if (territory.player == currentPlayer) {
+      } else if (territory.player.name == currentPlayer) {
         this.lastSelected = territory;
       }
     },
