@@ -3,7 +3,7 @@
   <div v-for="(player, index) in model.players" :key="'player-' + index">
     {{ player }}
   </div>
-  <o-button size="medium" variant="primary" @click="statGame()">
+  <o-button size="medium" variant="primary" @click="startGame()">
     Start
   </o-button>
 </template>
