@@ -20,7 +20,7 @@
 <script>
 export default {
   name: "MoveModal",
-  emits: ["move-units"],
+  emits: ["game-id", "close"],
   data() {
     return {
       id: null

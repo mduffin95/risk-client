@@ -51,9 +51,29 @@ export default {
     },
     goToGame(id) {
       this.$router.push({
-        name: "lobby",
+        name: "LOBBY",
         params: { playerName: this.playerName, id: id },
       });
+    },
+    pollGame() {
+      axios
+        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .then((response) => {
+          const vm = response.data;
+          this.model = vm.model;
+          this.actionCount = vm.actionCount
+          console.log(vm)
+          const screen = vm.screen
+          if (screen == 'GAME') {
+            console.log('transitioning to game')
+            this.$router.push({ name: this.model.screen , params: { id: this.id }});
+          } else {
+            this.pollGame();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   },
 };

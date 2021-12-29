@@ -3,18 +3,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'landing',
+    name: 'LANDING',
     component: () => import('../views/Landing.vue')
   },
   {
     path: '/',
-    name: 'lobby',
+    name: 'LOBBY',
     component: () => import('../views/Lobby.vue'),
     props: true
   },
   {
     path: '/:id/',
-    name: 'game',
+    name: 'GAME',
     component: () => import('../views/Game.vue'),
     props: true
   }

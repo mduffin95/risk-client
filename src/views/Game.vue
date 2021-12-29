@@ -186,17 +186,24 @@ export default {
           console.log(error);
         });
     },
+    pollGame() {
+      axios
+        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .then((response) => {
+          // TODO: Remove duplication
+          const vm = response.data;
+          this.gameModel = vm.model;
+          // this.actionCount = vm.actionCount
+          console.log(vm)
+          this.pollGame();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
   mounted() {
-    axios
-      .get("http://localhost:8080/api/" + this.id + "/game")
-      .then((response) => {
-        console.log(response.data);
-        this.gameModel = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.pollGame();
   },
 };
 </script>

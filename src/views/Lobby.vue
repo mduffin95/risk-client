@@ -14,6 +14,7 @@ import * as axios from "axios";
 export default {
   data() {
     return {
+      actionCount: 0,
       model: {},
     };
   },
@@ -27,22 +28,27 @@ export default {
       .get("http://localhost:8080/api/" + this.id + "/start")
       .then((response) => {
         console.log(response.data);
-        this.model = response.data;
-        this.$router.push({ name: "game" , params: { id: this.id }});
+        // this.model = response.data;
+        // this.$router.push({ name: "game" , params: { id: this.id }});
       })
       .catch((error) => {
         console.log(error);
       });
     },
-    pollLobby() {
+    pollGame() {
       axios
-        .post("http://localhost:8080/api/" + this.id + "/lobby", this.model)
+        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
         .then((response) => {
-          this.model = response.data;
-          if (this.model.hasStarted) {
-            this.$router.push({ name: "game" , params: { id: this.id }});
+          const vm = response.data;
+          this.model = vm.model;
+          this.actionCount = vm.actionCount
+          console.log(vm)
+          const screen = vm.screen
+          if (screen == 'GAME') {
+            console.log('transitioning to: ' + screen)
+            this.$router.push({ name: screen , params: { id: this.id }});
           } else {
-            this.pollLobby();
+            this.pollGame();
           }
         })
         .catch((error) => {
@@ -53,10 +59,7 @@ export default {
   mounted() {
     axios
       .post("http://localhost:8080/api/" + this.id + "/join", { player: this.playerName })
-      .then((response) => {
-        this.model = response.data;
-        this.pollLobby();
-      })
+      .then(() => this.pollGame())
       .catch((error) => {
         console.log(error);
       });
