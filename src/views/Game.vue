@@ -75,9 +75,6 @@ export default {
       };
       axios
         .post("http://localhost:8080/api/" + this.id + "/draft", draft_data)
-        .then((response) => {
-          this.gameModel = response.data;
-        })
         .catch((error) => {
           console.log(error);
         });
@@ -96,9 +93,6 @@ export default {
         };
         axios
           .post("http://localhost:8080/api/" + this.id + "/attack", attack_data)
-          .then((response) => {
-            this.gameModel = response.data;
-          })
           .catch((error) => {
             console.log(error);
           });
@@ -179,9 +173,6 @@ export default {
     endTurn() {
       axios
         .get("http://localhost:8080/api/" + this.id + "/end")
-        .then((response) => {
-          this.gameModel = response.data;
-        })
         .catch((error) => {
           console.log(error);
         });
