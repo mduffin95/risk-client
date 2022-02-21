@@ -10,6 +10,7 @@
 
 <script>
 import * as axios from "axios";
+import { getUrl } from '../utils'
 
 export default {
   data() {
@@ -25,7 +26,7 @@ export default {
   methods: {
     startGame() {
       axios
-      .get("http://localhost:8080/api/" + this.id + "/start")
+      .get(getUrl() + "/api/" + this.id + "/start")
       .then((response) => {
         console.log(response.data);
         // this.model = response.data;
@@ -37,7 +38,7 @@ export default {
     },
     pollGame() {
       axios
-        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + this.id + "/game", { actionCount: this.actionCount })
         .then((response) => {
           const vm = response.data;
           this.model = vm.model;
@@ -58,7 +59,7 @@ export default {
   },
   mounted() {
     axios
-      .post("http://localhost:8080/api/" + this.id + "/join", { player: this.playerName })
+      .post(getUrl() + this.id + "/join", { player: this.playerName })
       .then(() => this.pollGame())
       .catch((error) => {
         console.log(error);

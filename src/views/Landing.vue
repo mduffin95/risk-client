@@ -21,6 +21,7 @@
 <script>
 import * as axios from "axios";
 import JoinModal from "../components/JoinModal.vue";
+import { getUrl } from '../utils';
 
 export default {
   data() {
@@ -31,7 +32,7 @@ export default {
   methods: {
     newGame() {
       axios
-        .get("http://localhost:8080/api/newgame")
+        .get(getUrl() + "/api/newgame")
         .then((response) => {
           this.goToGame(response.data);
         })
@@ -57,7 +58,7 @@ export default {
     },
     pollGame() {
       axios
-        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
         .then((response) => {
           const vm = response.data;
           this.model = vm.model;

@@ -33,6 +33,7 @@
 import * as axios from "axios";
 import Marker from "../components/Marker.vue";
 import MoveModal from "../components/MoveModal.vue";
+import { getUrl } from '../utils';
 
 export default {
   name: "App",
@@ -74,7 +75,7 @@ export default {
         territory: territory.name,
       };
       axios
-        .post("http://localhost:8080/api/" + this.id + "/draft", draft_data)
+        .post(getUrl() + "/api/" + this.id + "/draft", draft_data)
         .catch((error) => {
           console.log(error);
         });
@@ -92,7 +93,7 @@ export default {
           to: territory.name,
         };
         axios
-          .post("http://localhost:8080/api/" + this.id + "/attack", attack_data)
+          .post(getUrl() + "/api/" + this.id + "/attack", attack_data)
           .catch((error) => {
             console.log(error);
           });
@@ -136,7 +137,7 @@ export default {
       };
       this.lastSelected = null;
       axios
-        .post("http://localhost:8080/api/" + this.id + "/fortify", fortify_data)
+        .post(getUrl() + "/api/" + this.id + "/fortify", fortify_data)
         .then((response) => {
           this.gameModel = response.data;
         })
@@ -149,7 +150,7 @@ export default {
       console.log(unitsToMove);
 
       axios
-        .post("http://localhost:8080/api/" + this.id + "/move", {
+        .post(getUrl() + "/api/" + this.id + "/move", {
           units: unitsToMove,
         })
         .then((response) => {
@@ -172,14 +173,14 @@ export default {
     },
     endTurn() {
       axios
-        .get("http://localhost:8080/api/" + this.id + "/end")
+        .get(getUrl() + "/api/" + this.id + "/end")
         .catch((error) => {
           console.log(error);
         });
     },
     pollGame() {
       axios
-        .post("http://localhost:8080/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
         .then((response) => {
           // TODO: Remove duplication
           const vm = response.data;
