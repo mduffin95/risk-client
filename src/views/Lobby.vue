@@ -38,7 +38,7 @@ export default {
     },
     pollGame() {
       axios
-        .post(getUrl() + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
         .then((response) => {
           const vm = response.data;
           this.model = vm.model;
@@ -59,7 +59,7 @@ export default {
   },
   mounted() {
     axios
-      .post(getUrl() + this.id + "/join", { player: this.playerName })
+      .post(getUrl() + "/api/" + this.id + "/join", { player: this.playerName })
       .then(() => this.pollGame())
       .catch((error) => {
         console.log(error);
