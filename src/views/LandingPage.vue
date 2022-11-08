@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import * as axios from "axios";
+import axios from "axios";
 import JoinModal from "../components/JoinModal.vue";
 import { getUrl } from '../utils';
 

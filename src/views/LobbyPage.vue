@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import * as axios from "axios";
+import axios from "axios";
 import { getUrl } from '../utils'
 
 export default {
