@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'Marker',
+  name: 'TokenMarker',
   props: {
     territory: Object,
     selected: Boolean

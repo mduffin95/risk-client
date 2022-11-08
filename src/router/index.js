@@ -4,18 +4,18 @@ const routes = [
   {
     path: '/',
     name: 'LANDING',
-    component: () => import('../views/Landing.vue')
+    component: () => import('../views/LandingPage.vue')
   },
   {
     path: '/',
     name: 'LOBBY',
-    component: () => import('../views/Lobby.vue'),
+    component: () => import('../views/LobbyPage.vue'),
     props: true
   },
   {
     path: '/:id/',
     name: 'GAME',
-    component: () => import('../views/Game.vue'),
+    component: () => import('../views/GamePage.vue'),
     props: true
   }
 ]

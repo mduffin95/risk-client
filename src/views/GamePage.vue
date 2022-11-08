@@ -18,7 +18,7 @@
         src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Risk_board.svg"
       />
 
-      <Marker
+      <TokenMarker
         v-for="(territory, index) in gameModel.territories"
         :key="'marker-' + index"
         :territory="territory"
@@ -31,14 +31,14 @@
 
 <script>
 import * as axios from "axios";
-import Marker from "../components/Marker.vue";
+import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
 import { getUrl } from '../utils';
 
 export default {
   name: "App",
   components: {
-    Marker,
+    TokenMarker,
   },
   props: {
     // name: String, // player name
