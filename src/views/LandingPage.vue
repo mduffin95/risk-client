@@ -51,6 +51,7 @@ export default {
       });
     },
     goToGame(id) {
+      console.log("go to game: " + id)
       this.$router.push({
         name: "LOBBY",
         params: { playerName: this.playerName, id: id },

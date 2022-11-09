@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import * as axios from "axios";
+import axios from "axios";
 import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
 import { getUrl } from '../utils';
