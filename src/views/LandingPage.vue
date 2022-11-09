@@ -3,7 +3,7 @@
     <div class="modal-card" style="width: auto">
       <section class="modal-card-body">
         <o-field label="Player Name">
-          <o-input type="text" v-model="store.playerName"> </o-input>
+          <o-input type="text" v-model="this.playerName"> </o-input>
         </o-field>
       </section>
       <footer class="modal-card-foot">
@@ -22,15 +22,19 @@
 import axios from "axios";
 import JoinModal from "../components/JoinModal.vue";
 import { getUrl } from "../utils";
-import store from "../store";
-// import { useProgrammatic } from "@oruga-ui/oruga-next";
-// import ModalForm from "./_modal-form-async.vue";
+import { useGameStore } from '@/stores/GameStore'
+import { mapStores } from 'pinia'
+
+const st = useGameStore()
 
 export default {
   data() {
     return {
-      store,
-    };
+      playerName: ""
+    }
+  },
+  computed: {
+    ...mapStores(st)
   },
   methods: {
     newGame() {
@@ -54,15 +58,16 @@ export default {
       });
     },
     goToGame(id) {
-      console.log("go to game: " + id + " with player name " + store.playerName);
+      this.gameStore.playerName = this.playerName;
+      console.log("go to game: " + id + " with player name " + this.gameStore.playerName);
       axios
         .post(getUrl() + "/api/" + id + "/join", {
-          player: store.playerName,
+          player: this.gameStore.playerName,
         })
         .then(() =>
           this.$router.push({
             name: "LOBBY",
-            params: { id: id },
+            params: { id: id }
           })
         )
         .catch((error) => {

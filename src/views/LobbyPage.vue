@@ -11,15 +11,20 @@
 <script>
 import axios from "axios";
 import { getUrl } from '../utils'
-import store from "../store"
+import { useGameStore } from '@/stores/GameStore'
+import { mapStores } from 'pinia'
+
+const gameStore = useGameStore();
 
 export default {
   data() {
     return {
-      store,
       actionCount: 0,
       model: {},
     };
+  },
+  computed: {
+    ...mapStores(gameStore)
   },
   props: {
     playerName: String,

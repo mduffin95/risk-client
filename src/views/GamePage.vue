@@ -1,7 +1,8 @@
 <template>
   <div>
     <div>
-      <p>Current player: {{ gameModel.currentPlayer }}</p>
+      <p v-if="this.GameStore.playerName == gameModel.currentPlayer">Your turn</p>
+      <p v-else>Current player: {{ gameModel.currentPlayer }}</p>
       <p>Phase: {{ gameModel.phase }}</p>
       <p v-if="gameModel.phase == 'DRAFT' || gameModel.phase == 'ALLDRAFT'">
         Units to place: {{ gameModel.unitsToPlace }}
@@ -34,7 +35,8 @@ import axios from "axios";
 import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
 import { getUrl } from '../utils';
-import store from "../store";
+import { useGameStore } from '@/stores/GameStore'
+import { mapStores } from 'pinia'
 
 export default {
   name: "App",
@@ -42,15 +44,16 @@ export default {
     TokenMarker,
   },
   props: {
-    // name: String, // player name
     id: String // game ID
   },
   data() {
     return {
-      store,
       gameModel: {},
       lastSelected: null,
     };
+  },
+  computed: {
+    ...mapStores(useGameStore())
   },
   methods: {
     clicked(territory) {
@@ -187,6 +190,7 @@ export default {
           this.gameModel = vm.model;
           this.actionCount = vm.actionCount
           console.log(vm)
+          console.log(this.GameStore)
           this.pollGame();
         })
         .catch((error) => {
