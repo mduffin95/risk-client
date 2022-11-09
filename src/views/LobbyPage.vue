@@ -11,10 +11,12 @@
 <script>
 import axios from "axios";
 import { getUrl } from '../utils'
+import store from "../store"
 
 export default {
   data() {
     return {
+      store,
       actionCount: 0,
       model: {},
     };
@@ -30,7 +32,7 @@ export default {
       .then((response) => {
         console.log(response.data);
         // this.model = response.data;
-        // this.$router.push({ name: "game" , params: { id: this.id }});
+        this.$router.push({ name: "game" , params: { id: this.id }});
       })
       .catch((error) => {
         console.log(error);
@@ -58,12 +60,13 @@ export default {
     }
   },
   mounted() {
-    axios
-      .post(getUrl() + "/api/" + this.id + "/join", { player: this.playerName })
-      .then(() => this.pollGame())
-      .catch((error) => {
-        console.log(error);
-      });
+    this.pollGame();
+    // axios
+    //   .post(getUrl() + "/api/" + this.id + "/join", { player: store.playerName })
+    //   .then(() => this.pollGame())
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   },
 };
 </script>

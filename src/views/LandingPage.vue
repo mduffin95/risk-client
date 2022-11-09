@@ -3,7 +3,7 @@
     <div class="modal-card" style="width: auto">
       <section class="modal-card-body">
         <o-field label="Player Name">
-          <o-input type="text" v-model="playerName"> </o-input>
+          <o-input type="text" v-model="store.playerName"> </o-input>
         </o-field>
       </section>
       <footer class="modal-card-foot">
@@ -21,13 +21,16 @@
 <script>
 import axios from "axios";
 import JoinModal from "../components/JoinModal.vue";
-import { getUrl } from '../utils';
+import { getUrl } from "../utils";
+import store from "../store";
+// import { useProgrammatic } from "@oruga-ui/oruga-next";
+// import ModalForm from "./_modal-form-async.vue";
 
 export default {
   data() {
     return {
-      playerName: ""
-    }
+      store,
+    };
   },
   methods: {
     newGame() {
@@ -42,7 +45,7 @@ export default {
     },
     joinGame() {
       this.$oruga.modal.open({
-        parent: this,
+        // parent: this,
         component: JoinModal,
         trapFocus: true,
         events: {
@@ -51,24 +54,38 @@ export default {
       });
     },
     goToGame(id) {
-      console.log("go to game: " + id)
-      this.$router.push({
-        name: "LOBBY",
-        params: { playerName: this.playerName, id: id },
-      });
+      console.log("go to game: " + id + " with player name " + store.playerName);
+      axios
+        .post(getUrl() + "/api/" + id + "/join", {
+          player: store.playerName,
+        })
+        .then(() =>
+          this.$router.push({
+            name: "LOBBY",
+            params: { id: id },
+          })
+        )
+        .catch((error) => {
+          console.log(error);
+        });
     },
     pollGame() {
       axios
-        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + "/api/" + this.id + "/game", {
+          actionCount: this.actionCount,
+        })
         .then((response) => {
           const vm = response.data;
           this.model = vm.model;
-          this.actionCount = vm.actionCount
-          console.log(vm)
-          const screen = vm.screen
-          if (screen == 'GAME') {
-            console.log('transitioning to game')
-            this.$router.push({ name: this.model.screen , params: { id: this.id }});
+          this.actionCount = vm.actionCount;
+          console.log(vm);
+          const screen = vm.screen;
+          if (screen == "GAME") {
+            console.log("transitioning to game");
+            this.$router.push({
+              name: this.model.screen,
+              params: { id: this.id },
+            });
           } else {
             this.pollGame();
           }
@@ -76,7 +93,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-    }
+    },
   },
 };
 </script>

@@ -7,13 +7,13 @@ const routes = [
     component: () => import('../views/LandingPage.vue')
   },
   {
-    path: '/lobby/:id/:playerName',
+    path: '/:id/lobby',
     name: 'LOBBY',
     component: () => import('../views/LobbyPage.vue'),
     props: true
   },
   {
-    path: '/game/:id',
+    path: '/:id/game',
     name: 'GAME',
     component: () => import('../views/GamePage.vue'),
     props: true

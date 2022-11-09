@@ -34,6 +34,7 @@ import axios from "axios";
 import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
 import { getUrl } from '../utils';
+import store from "../store";
 
 export default {
   name: "App",
@@ -46,6 +47,7 @@ export default {
   },
   data() {
     return {
+      store,
       gameModel: {},
       lastSelected: null,
     };
@@ -113,7 +115,6 @@ export default {
         territory.player.name == currentPlayer
       ) {
         this.$oruga.modal.open({
-          parent: this,
           component: MoveModal,
           trapFocus: true,
           events: {
@@ -163,7 +164,6 @@ export default {
     modal() {
       // const modal = MoveModal
       this.$oruga.modal.open({
-        parent: this,
         component: MoveModal,
         trapFocus: true,
         events: {
@@ -185,7 +185,7 @@ export default {
           // TODO: Remove duplication
           const vm = response.data;
           this.gameModel = vm.model;
-          // this.actionCount = vm.actionCount
+          this.actionCount = vm.actionCount
           console.log(vm)
           this.pollGame();
         })

@@ -22,3 +22,9 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Docker
+```
+docker build -t mjduffin/risk-client .
+docker run -it -p 8081:80 --rm --name risk-client-1 mjduffin/risk-client
+```
