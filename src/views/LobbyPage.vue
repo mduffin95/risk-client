@@ -1,79 +1,63 @@
 <template>
-  <div>{{ id }}</div>
-  <div v-for="(player, index) in model.players" :key="'player-' + index">
-    {{ player.name }}
-  </div>
+  <div>Game: {{ store.id }}</div>
+  <div>Players: </div>
+  <ul>
+    <li v-for="(player, index) in store.model.players" :key="'player-' + index">
+      {{ player.name }}
+    </li>
+  </ul>
   <o-button size="medium" variant="primary" @click="startGame()">
     Start
   </o-button>
 </template>
 
-<script>
+<script setup>
 import axios from "axios";
 import { getUrl } from '../utils'
 import { useGameStore } from '@/stores/GameStore'
-import { mapStores } from 'pinia'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router';
 
-const gameStore = useGameStore();
+const router = useRouter();
+const store = useGameStore();
 
-export default {
-  data() {
-    return {
-      actionCount: 0,
-      model: {},
-    };
-  },
-  computed: {
-    ...mapStores(gameStore)
-  },
-  props: {
-    playerName: String,
-    id: String
-  },
-  methods: {
-    startGame() {
+const pollGame = () => {
       axios
-      .get(getUrl() + "/api/" + this.id + "/start")
-      .then((response) => {
-        console.log(response.data);
-        // this.model = response.data;
-        this.$router.push({ name: "game" , params: { id: this.id }});
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    },
-    pollGame() {
-      axios
-        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
+        .post(getUrl() + "/api/" + store.id + "/game", { actionCount: store.actionCount })
         .then((response) => {
           const vm = response.data;
-          this.model = vm.model;
-          this.actionCount = vm.actionCount
-          console.log(vm)
+          store.model = vm.model;
+          store.actionCount = vm.actionCount
+          console.log(vm);
           const screen = vm.screen
           if (screen == 'GAME') {
             console.log('transitioning to: ' + screen)
-            this.$router.push({ name: screen , params: { id: this.id }});
+            router.push({ name: screen , params: { id: store.id }});
           } else {
-            this.pollGame();
+            pollGame();
           }
         })
         .catch((error) => {
           console.log(error);
         });
-    }
-  },
-  mounted() {
-    this.pollGame();
-    // axios
-    //   .post(getUrl() + "/api/" + this.id + "/join", { player: store.playerName })
-    //   .then(() => this.pollGame())
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-  },
-};
+    };
+
+const startGame = () => {
+      axios
+      .get(getUrl() + "/api/" + store.id + "/start")
+      .then((response) => {
+        console.log(response.data);
+        router.push({ name: "game" , params: { id: store.id }});
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    };
+
+onMounted(() => {
+  pollGame();
+})
+
 </script>
 <style scoped>
 </style>

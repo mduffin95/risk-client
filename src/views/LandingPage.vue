@@ -25,11 +25,8 @@ import { getUrl } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { useRouter } from 'vue-router';
 import { useProgrammatic } from '@oruga-ui/oruga-next'
-// import { ref } from "vue";
-// import { mapStores } from "pinia";
 
-// const playerName = ref("");
-const oruga = useProgrammatic();
+const { oruga } = useProgrammatic();
 const router = useRouter();
 const store = useGameStore();
 
@@ -46,7 +43,6 @@ const newGame = () => {
 
 const joinGame = () => {
   oruga.modal.open({
-    // parent: this,
     component: JoinModal,
     trapFocus: true,
     events: {
@@ -56,10 +52,11 @@ const joinGame = () => {
 };
 
 const goToGame = (id) => {
-  // this.gameStore.playerName = this.playerName;
   console.log(
     "go to game: " + id + " with player name " + store.playerName
   );
+  // write to store
+  store.id = id;
   axios
     .post(getUrl() + "/api/" + id + "/join", {
       player: store.playerName,
@@ -75,31 +72,7 @@ const goToGame = (id) => {
     });
 };
 
-// const pollGame = () => {
-//   axios
-//     .post(getUrl() + "/api/" + this.id + "/game", {
-//       actionCount: this.actionCount,
-//     })
-//     .then((response) => {
-//       const vm = response.data;
-//       this.model = vm.model;
-//       this.actionCount = vm.actionCount;
-//       console.log(vm);
-//       const screen = vm.screen;
-//       if (screen == "GAME") {
-//         console.log("transitioning to game");
-//         this.$router.push({
-//           name: this.model.screen,
-//           params: { id: this.id },
-//         });
-//       } else {
-//         pollGame();
-//       }
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// };
 </script>
+
 <style scoped>
 </style>
