@@ -1,7 +1,9 @@
 <template>
   <div>
     <div>
-      <p v-if="this.GameStore.playerName == gameModel.currentPlayer">Your turn</p>
+      <p v-if="store.GameStore.playerName == gameModel.currentPlayer">
+        Your turn
+      </p>
       <p v-else>Current player: {{ gameModel.currentPlayer }}</p>
       <p>Phase: {{ gameModel.phase }}</p>
       <p v-if="gameModel.phase == 'DRAFT' || gameModel.phase == 'ALLDRAFT'">
@@ -32,176 +34,170 @@
 
 <script>
 import axios from "axios";
-import TokenMarker from "../components/TokenMarker.vue";
+// import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
-import { getUrl } from '../utils';
-import { useGameStore } from '@/stores/GameStore'
-import { mapStores } from 'pinia'
+import { getUrl } from "../utils";
+import { useGameStore } from "@/stores/GameStore";
+import { onMounted } from "vue";
+// import { useRouter } from "vue-router";
+import { useProgrammatic } from '@oruga-ui/oruga-next'
 
-export default {
-  name: "App",
-  components: {
-    TokenMarker,
-  },
-  props: {
-    id: String // game ID
-  },
-  data() {
-    return {
-      gameModel: {},
-      lastSelected: null,
-    };
-  },
-  computed: {
-    ...mapStores(useGameStore())
-  },
-  methods: {
-    clicked(territory) {
-      switch (this.gameModel.phase) {
-        case "DRAFT":
-        case "ALLDRAFT":
-          this.draft(territory);
-          break;
-        case "ATTACK":
-          this.attack(territory);
-          break;
-        case "MOVE":
-          this.modal();
-          break;
-        case "FORTIFY":
-          this.fortify(territory);
-          break;
-        default:
-          console.log("No phase for " + this.gameModel.phase);
-      }
-    },
-    draft(territory) {
-      const draft_data = {
-        territory: territory.name,
-      };
-      axios
-        .post(getUrl() + "/api/" + this.id + "/draft", draft_data)
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    attack(territory) {
-      const currentPlayer = this.gameModel.currentPlayer;
-      if (
-        this.lastSelected != null &&
-        this.lastSelected.player.name == currentPlayer &&
-        territory.player.name != currentPlayer
-      ) {
-        console.log("ATTACK");
-        const attack_data = {
-          from: this.lastSelected.name,
-          to: territory.name,
-        };
-        axios
-          .post(getUrl() + "/api/" + this.id + "/attack", attack_data)
-          .catch((error) => {
-            console.log(error);
-          });
-        this.lastSelected = null;
-        if (this.gameModel.phase == "MOVE") {
-          this.modal();
-        }
-      } else if (territory.player.name == currentPlayer) {
-        this.lastSelected = territory;
-      }
-    },
-    fortify(territory) {
-      const currentPlayer = this.gameModel.currentPlayer;
-      if (
-        this.lastSelected != null &&
-        this.lastSelected.player.name == currentPlayer &&
-        territory.player.name == currentPlayer
-      ) {
-        this.$oruga.modal.open({
-          component: MoveModal,
-          trapFocus: true,
-          events: {
-            "move-units": (units) =>
-              this.fortifyWithUnits(
-                this.lastSelected.name,
-                territory.name,
-                units
-              ),
-          },
-        });
-      } else if (territory.player.name == currentPlayer) {
-        this.lastSelected = territory;
-      }
-    },
-    fortifyWithUnits(from, to, units) {
-      const fortify_data = {
-        from: from,
-        to: to,
-        units: units,
-      };
-      this.lastSelected = null;
-      axios
-        .post(getUrl() + "/api/" + this.id + "/fortify", fortify_data)
-        .then((response) => {
-          this.gameModel = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    move(unitsToMove) {
-      // this.moveModalActive = true;
-      console.log(unitsToMove);
+// const router = useRouter();
+const { oruga } = useProgrammatic();
+const store = useGameStore();
 
-      axios
-        .post(getUrl() + "/api/" + this.id + "/move", {
-          units: unitsToMove,
-        })
-        .then((response) => {
-          this.gameModel = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    modal() {
-      // const modal = MoveModal
-      this.$oruga.modal.open({
-        component: MoveModal,
-        trapFocus: true,
-        events: {
-          "move-units": this.move,
-        },
-      });
-    },
-    endTurn() {
-      axios
-        .get(getUrl() + "/api/" + this.id + "/end")
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    pollGame() {
-      axios
-        .post(getUrl() + "/api/" + this.id + "/game", { actionCount: this.actionCount })
-        .then((response) => {
-          // TODO: Remove duplication
-          const vm = response.data;
-          this.gameModel = vm.model;
-          this.actionCount = vm.actionCount
-          console.log(vm)
-          console.log(this.GameStore)
-          this.pollGame();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  },
-  mounted() {
-    this.pollGame();
-  },
+store.lastSelected = null;
+// const lastSelected = null;
+store.gameModel = {};
+
+const clicked = (territory) => {
+  switch (store.gameModel.phase) {
+    case "DRAFT":
+    case "ALLDRAFT":
+      draft(territory);
+      break;
+    case "ATTACK":
+      attack(territory);
+      break;
+    case "MOVE":
+      modal();
+      break;
+    case "FORTIFY":
+      fortify(territory);
+      break;
+    default:
+      console.log("No phase for " + store.gameModel.phase);
+  }
 };
+
+const draft = (territory) => {
+  const draft_data = {
+    territory: territory.name,
+  };
+  axios
+    .post(getUrl() + "/api/" + store.id + "/draft", draft_data)
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+const attack = (territory) => {
+  const currentPlayer = store.gameModel.currentPlayer;
+  if (
+    store.lastSelected != null &&
+    store.lastSelected.player.name == currentPlayer &&
+    territory.player.name != currentPlayer
+  ) {
+    console.log("ATTACK");
+    const attack_data = {
+      from: store.lastSelected.name,
+      to: territory.name,
+    };
+    axios
+      .post(getUrl() + "/api/" + store.id + "/attack", attack_data)
+      .catch((error) => {
+        console.log(error);
+      });
+    store.lastSelected = null;
+    if (store.gameModel.phase == "MOVE") {
+      store.modal();
+    }
+  } else if (territory.player.name == currentPlayer) {
+    store.lastSelected = territory;
+  }
+};
+
+const fortify = (territory) => {
+  const currentPlayer = store.gameModel.currentPlayer;
+  if (
+    store.lastSelected != null &&
+    store.lastSelected.player.name == currentPlayer &&
+    territory.player.name == currentPlayer
+  ) {
+    oruga.modal.open({
+      component: MoveModal,
+      trapFocus: true,
+      events: {
+        "move-units": (units) =>
+          fortifyWithUnits(store.lastSelected.name, territory.name, units),
+      },
+    });
+  } else if (territory.player.name == currentPlayer) {
+    store.lastSelected = territory;
+  }
+};
+
+const fortifyWithUnits = (from, to, units) => {
+  const fortify_data = {
+    from: from,
+    to: to,
+    units: units,
+  };
+  store.lastSelected = null;
+  axios
+    .post(getUrl() + "/api/" + store.id + "/fortify", fortify_data)
+    .then((response) => {
+      store.gameModel = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+const move = (unitsToMove) => {
+  // store.moveModalActive = true;
+  console.log(unitsToMove);
+
+  axios
+    .post(getUrl() + "/api/" + store.id + "/move", {
+      units: unitsToMove,
+    })
+    .then((response) => {
+      store.gameModel = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+const modal = () => {
+  // const modal = MoveModal
+  store.$oruga.modal.open({
+    component: MoveModal,
+    trapFocus: true,
+    events: {
+      "move-units": move,
+    },
+  });
+};
+
+const endTurn = () => {
+  axios.get(getUrl() + "/api/" + store.id + "/end").catch((error) => {
+    console.log(error);
+  });
+};
+
+const pollGame = () => {
+  axios
+    .post(getUrl() + "/api/" + store.id + "/game", {
+      actionCount: store.actionCount,
+    })
+    .then((response) => {
+      // TODO: Remove duplication
+      const vm = response.data;
+      store.gameModel = vm.model;
+      store.actionCount = vm.actionCount;
+      console.log(vm);
+      console.log(store.GameStore);
+      store.pollGame();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+onMounted(() => {
+  pollGame();
+});
 </script>
 
 <style>
