@@ -1,15 +1,15 @@
 <template>
   <div>
     <div>
-      <p v-if="store.GameStore.playerName == gameModel.currentPlayer">
+      <p v-if="store.playerName == store.model.currentPlayer">
         Your turn
       </p>
-      <p v-else>Current player: {{ gameModel.currentPlayer }}</p>
-      <p>Phase: {{ gameModel.phase }}</p>
-      <p v-if="gameModel.phase == 'DRAFT' || gameModel.phase == 'ALLDRAFT'">
-        Units to place: {{ gameModel.unitsToPlace }}
+      <p v-else>Current player: {{ store.model.currentPlayer }}</p>
+      <p>Phase: {{ store.model.phase }}</p>
+      <p v-if="store.model.phase == 'DRAFT' || store.model.phase == 'ALLDRAFT'">
+        Units to place: {{ store.model.unitsToPlace }}
       </p>
-      <p v-if="gameModel.error != null">Error: {{ gameModel.error }}</p>
+      <p v-if="store.model.error != null">Error: {{ store.model.error }}</p>
       <o-button size="medium" variant="primary" @click="endTurn()">
         End Turn
       </o-button>
@@ -22,7 +22,7 @@
       />
 
       <TokenMarker
-        v-for="(territory, index) in gameModel.territories"
+        v-for="(territory, index) in store.model.territories"
         :key="'marker-' + index"
         :territory="territory"
         @click="clicked(territory)"
@@ -32,7 +32,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import axios from "axios";
 // import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
@@ -44,14 +44,15 @@ import { useProgrammatic } from '@oruga-ui/oruga-next'
 
 // const router = useRouter();
 const { oruga } = useProgrammatic();
+
 const store = useGameStore();
 
 store.lastSelected = null;
 // const lastSelected = null;
-store.gameModel = {};
+// store.gameModel = {};
 
 const clicked = (territory) => {
-  switch (store.gameModel.phase) {
+  switch (store.model.phase) {
     case "DRAFT":
     case "ALLDRAFT":
       draft(territory);
@@ -66,7 +67,7 @@ const clicked = (territory) => {
       fortify(territory);
       break;
     default:
-      console.log("No phase for " + store.gameModel.phase);
+      console.log("No phase for " + store.model.phase);
   }
 };
 
@@ -82,7 +83,7 @@ const draft = (territory) => {
 };
 
 const attack = (territory) => {
-  const currentPlayer = store.gameModel.currentPlayer;
+  const currentPlayer = store.model.currentPlayer;
   if (
     store.lastSelected != null &&
     store.lastSelected.player.name == currentPlayer &&
@@ -99,7 +100,7 @@ const attack = (territory) => {
         console.log(error);
       });
     store.lastSelected = null;
-    if (store.gameModel.phase == "MOVE") {
+    if (store.model.phase == "MOVE") {
       store.modal();
     }
   } else if (territory.player.name == currentPlayer) {
@@ -108,7 +109,7 @@ const attack = (territory) => {
 };
 
 const fortify = (territory) => {
-  const currentPlayer = store.gameModel.currentPlayer;
+  const currentPlayer = store.model.currentPlayer;
   if (
     store.lastSelected != null &&
     store.lastSelected.player.name == currentPlayer &&
@@ -137,7 +138,7 @@ const fortifyWithUnits = (from, to, units) => {
   axios
     .post(getUrl() + "/api/" + store.id + "/fortify", fortify_data)
     .then((response) => {
-      store.gameModel = response.data;
+      store.model = response.data;
     })
     .catch((error) => {
       console.log(error);
@@ -153,7 +154,7 @@ const move = (unitsToMove) => {
       units: unitsToMove,
     })
     .then((response) => {
-      store.gameModel = response.data;
+      store.model = response.data;
     })
     .catch((error) => {
       console.log(error);
@@ -185,11 +186,11 @@ const pollGame = () => {
     .then((response) => {
       // TODO: Remove duplication
       const vm = response.data;
-      store.gameModel = vm.model;
+      store.model = vm.model;
       store.actionCount = vm.actionCount;
       console.log(vm);
-      console.log(store.GameStore);
-      store.pollGame();
+      // console.log(store.GameStore);
+      pollGame();
     })
     .catch((error) => {
       console.log(error);

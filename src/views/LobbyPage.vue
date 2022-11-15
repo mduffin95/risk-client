@@ -47,7 +47,7 @@ const startGame = () => {
       .get(getUrl() + "/api/" + store.id + "/start")
       .then((response) => {
         console.log(response.data);
-        router.push({ name: "game" , params: { id: store.id }});
+        router.push({ name: "GAME" , params: { id: store.id }});
       })
       .catch((error) => {
         console.log(error);
