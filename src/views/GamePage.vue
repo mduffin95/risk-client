@@ -41,9 +41,14 @@ import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
 // import { useRouter } from "vue-router";
 import { useProgrammatic } from '@oruga-ui/oruga-next'
+import { useRoute } from 'vue-router'
 
 // const router = useRouter();
 const { oruga } = useProgrammatic();
+
+const route = useRoute();
+console.log("route");
+console.log(route.params)
 
 const store = useGameStore();
 
@@ -76,7 +81,7 @@ const draft = (territory) => {
     territory: territory.name,
   };
   axios
-    .post(getUrl() + "/api/" + store.id + "/draft", draft_data)
+    .post(getUrl() + "/api/" + route.params.id + "/draft", draft_data)
     .catch((error) => {
       console.log(error);
     });
@@ -95,7 +100,7 @@ const attack = (territory) => {
       to: territory.name,
     };
     axios
-      .post(getUrl() + "/api/" + store.id + "/attack", attack_data)
+      .post(getUrl() + "/api/" + route.params.id + "/attack", attack_data)
       .catch((error) => {
         console.log(error);
       });
@@ -136,7 +141,7 @@ const fortifyWithUnits = (from, to, units) => {
   };
   store.lastSelected = null;
   axios
-    .post(getUrl() + "/api/" + store.id + "/fortify", fortify_data)
+    .post(getUrl() + "/api/" + route.params.id + "/fortify", fortify_data)
     .then((response) => {
       store.model = response.data;
     })
@@ -150,7 +155,7 @@ const move = (unitsToMove) => {
   console.log(unitsToMove);
 
   axios
-    .post(getUrl() + "/api/" + store.id + "/move", {
+    .post(getUrl() + "/api/" + route.params.id + "/move", {
       units: unitsToMove,
     })
     .then((response) => {
@@ -173,14 +178,14 @@ const modal = () => {
 };
 
 const endTurn = () => {
-  axios.get(getUrl() + "/api/" + store.id + "/end").catch((error) => {
+  axios.get(getUrl() + "/api/" + route.params.id + "/end").catch((error) => {
     console.log(error);
   });
 };
 
 const pollGame = () => {
   axios
-    .post(getUrl() + "/api/" + store.id + "/game", {
+    .post(getUrl() + "/api/" + route.params.id + "/game", {
       actionCount: store.actionCount,
     })
     .then((response) => {

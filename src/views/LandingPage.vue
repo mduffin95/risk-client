@@ -56,7 +56,7 @@ const goToGame = (id) => {
     "go to game: " + id + " with player name " + store.playerName
   );
   // write to store
-  store.id = id;
+  // store.id = id;
   axios
     .post(getUrl() + "/api/" + id + "/join", {
       player: store.playerName,
