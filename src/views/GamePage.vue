@@ -26,7 +26,7 @@
         :key="'marker-' + index"
         :territory="territory"
         @click="clicked(territory)"
-        :selected="territory.name === lastSelected?.name"
+        :selected="territory.name === store.lastSelected?.name"
       />
     </div>
   </div>
@@ -34,7 +34,7 @@
 
 <script setup>
 import axios from "axios";
-// import TokenMarker from "../components/TokenMarker.vue";
+import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
 import { getUrl } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
@@ -47,7 +47,7 @@ const { oruga } = useProgrammatic();
 
 const store = useGameStore();
 
-store.lastSelected = null;
+// store.lastSelected = null;
 // const lastSelected = null;
 // store.gameModel = {};
 
@@ -163,7 +163,7 @@ const move = (unitsToMove) => {
 
 const modal = () => {
   // const modal = MoveModal
-  store.$oruga.modal.open({
+  oruga.modal.open({
     component: MoveModal,
     trapFocus: true,
     events: {
