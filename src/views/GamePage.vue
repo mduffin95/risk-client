@@ -51,6 +51,7 @@ console.log("route");
 console.log(route.params)
 
 const store = useGameStore();
+store.actionCount = 0;
 
 // store.lastSelected = null;
 // const lastSelected = null;
@@ -79,9 +80,9 @@ const clicked = (territory) => {
 const draft = (territory) => {
   const draft_data = {
     territory: territory.name,
-  };
+  }
   axios
-    .post(getUrl() + "/api/" + route.params.id + "/draft", draft_data)
+    .post(getUrl() + "/api/games/" + route.params.id + "/turn/draft", draft_data)
     .catch((error) => {
       console.log(error);
     });
@@ -100,7 +101,7 @@ const attack = (territory) => {
       to: territory.name,
     };
     axios
-      .post(getUrl() + "/api/" + route.params.id + "/attack", attack_data)
+      .post(getUrl() + "/api/games/" + route.params.id + "/turn/attack", attack_data)
       .catch((error) => {
         console.log(error);
       });
@@ -141,7 +142,7 @@ const fortifyWithUnits = (from, to, units) => {
   };
   store.lastSelected = null;
   axios
-    .post(getUrl() + "/api/" + route.params.id + "/fortify", fortify_data)
+    .post(getUrl() + "/api/games/" + route.params.id + "/turn/fortify", fortify_data)
     .then((response) => {
       store.model = response.data;
     })
@@ -155,7 +156,7 @@ const move = (unitsToMove) => {
   console.log(unitsToMove);
 
   axios
-    .post(getUrl() + "/api/" + route.params.id + "/move", {
+    .post(getUrl() + "/api/games/" + route.params.id + "/turn/move", {
       units: unitsToMove,
     })
     .then((response) => {
@@ -178,16 +179,16 @@ const modal = () => {
 };
 
 const endTurn = () => {
-  axios.get(getUrl() + "/api/" + route.params.id + "/end").catch((error) => {
+  axios.post(getUrl() + "/api/games/" + route.params.id + "/turn/end").catch((error) => {
     console.log(error);
   });
 };
 
 const pollGame = () => {
+  console.log("poll")
+  console.log(store.actionCount)
   axios
-    .post(getUrl() + "/api/" + route.params.id + "/game", {
-      actionCount: store.actionCount,
-    })
+    .get(getUrl() + "/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
       // TODO: Remove duplication
       const vm = response.data;
@@ -196,10 +197,10 @@ const pollGame = () => {
       console.log(vm);
       // console.log(store.GameStore);
       pollGame();
-    })
-    .catch((error) => {
-      console.log(error);
     });
+    // .catch((error) => {
+    //   // console.log(error);
+    // });
 };
 onMounted(() => {
   pollGame();

@@ -32,7 +32,7 @@ const store = useGameStore();
 
 const newGame = () => {
   axios
-    .get(getUrl() + "/api/newgame")
+    .post(getUrl() + "/api/games")
     .then((response) => {
       goToGame(response.data);
     })
@@ -58,9 +58,7 @@ const goToGame = (id) => {
   // write to store
   // store.id = id;
   axios
-    .post(getUrl() + "/api/" + id + "/join", {
-      player: store.playerName,
-    })
+    .put(getUrl() + "/api/games/" + id + "/players/" + store.playerName)
     .then(() =>
       router.push({
         name: "LOBBY",
