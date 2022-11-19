@@ -89,14 +89,19 @@ const fortify = (territory) => {
     store.lastSelected.player.name == currentPlayer &&
     territory.player.name == currentPlayer
   ) {
-    oruga.modal.open({
-      component: MoveModal,
-      trapFocus: true,
-      events: {
-        "move-units": (units) =>
-          fortifyWithUnits(store.lastSelected.name, territory.name, units),
-      },
-    });
+    if (territory.name == store.lastSelected.name) {
+      // de-select
+      store.lastSelected = null;
+    } else {
+      oruga.modal.open({
+        component: MoveModal,
+        trapFocus: true,
+        events: {
+          "move-units": (units) =>
+            fortifyWithUnits(store.lastSelected.name, territory.name, units),
+        },
+      });
+    }
   } else if (territory.player.name == currentPlayer) {
     store.lastSelected = territory;
   }
@@ -153,9 +158,6 @@ const pollGame = () => {
     .then((response) => {
       const vm = response.data;
       store.model = vm.model;
-      if (store.model.phase == 'MOVE') {
-        modal();
-      }
       store.actionCount = vm.actionCount;
       console.log(vm);
       pollGame();
