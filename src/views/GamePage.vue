@@ -38,23 +38,12 @@ import MoveModal from "../components/MoveModal.vue";
 import { axiosClient, sendDraft, sendAttack } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
-// import { useRouter } from "vue-router";
 import { useProgrammatic } from '@oruga-ui/oruga-next'
 import { useRoute } from 'vue-router'
 
-// const router = useRouter();
 const { oruga } = useProgrammatic();
-
 const route = useRoute();
-console.log("route");
-console.log(route.params)
-
 const store = useGameStore();
-store.actionCount = 0;
-
-// store.lastSelected = null;
-// const lastSelected = null;
-// store.gameModel = {};
 
 const clicked = (territory) => {
   switch (store.model.phase) {
@@ -131,7 +120,6 @@ const fortifyWithUnits = (from, to, units) => {
 };
 
 const move = (unitsToMove) => {
-  // store.moveModalActive = true;
   console.log(unitsToMove);
 
   axiosClient
@@ -147,7 +135,6 @@ const move = (unitsToMove) => {
 };
 
 const modal = () => {
-  // const modal = MoveModal
   oruga.modal.open({
     component: MoveModal,
     trapFocus: true,
@@ -169,17 +156,12 @@ const pollGame = () => {
   axiosClient
     .get("/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
-      // TODO: Remove duplication
       const vm = response.data;
       store.model = vm.model;
       store.actionCount = vm.actionCount;
       console.log(vm);
-      // console.log(store.GameStore);
       pollGame();
     });
-    // .catch((error) => {
-    //   // console.log(error);
-    // });
 };
 onMounted(() => {
   pollGame();
