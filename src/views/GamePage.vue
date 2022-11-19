@@ -35,7 +35,7 @@
 <script setup>
 import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
-import { axiosClient, sendDraft, sendAttack } from "../utils";
+import { axiosClient, sendDraft, sendAttack, sendMove } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
 import { useProgrammatic } from '@oruga-ui/oruga-next'
@@ -74,9 +74,9 @@ const attack = (territory) => {
   ) {
     sendAttack(route.params.id, store.lastSelected.name, territory.name);
     store.lastSelected = null;
-    if (store.model.phase == "MOVE") {
-      store.modal();
-    }
+    // if (store.model.phase == "MOVE") {
+    //   modal();
+    // }
   } else if (territory.player.name == currentPlayer) {
     store.lastSelected = territory;
   }
@@ -120,12 +120,7 @@ const fortifyWithUnits = (from, to, units) => {
 };
 
 const move = (unitsToMove) => {
-  console.log(unitsToMove);
-
-  axiosClient
-    .post("/api/games/" + route.params.id + "/turn/move", {
-      units: unitsToMove,
-    })
+  sendMove(route.params.id, unitsToMove)
     .then((response) => {
       store.model = response.data;
     })
@@ -158,6 +153,9 @@ const pollGame = () => {
     .then((response) => {
       const vm = response.data;
       store.model = vm.model;
+      if (store.model.phase == 'MOVE') {
+        modal();
+      }
       store.actionCount = vm.actionCount;
       console.log(vm);
       pollGame();

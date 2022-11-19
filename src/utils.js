@@ -26,4 +26,8 @@ export function sendAttack(id, fromTerritory, toTerritory) {
     return axiosClient.post("/api/games/" + id + "/turn/attack", attack_data);
 }
 
+export function sendMove(id, unitsToMove) {
+    return axiosClient.post("/api/games/" + id + "/turn/move", { units: unitsToMove })
+}
+
 export { axiosClient }
