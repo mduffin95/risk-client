@@ -12,8 +12,7 @@
 </template>
 
 <script setup>
-import axios from "axios";
-import { getUrl } from "../utils";
+import { axiosClient } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -23,10 +22,8 @@ const route = useRoute();
 const store = useGameStore();
 
 const pollGame = () => {
-  axios
-    .get(
-      getUrl() + "/api/games/" + route.params.id + "/game/" + store.actionCount
-    )
+  axiosClient
+    .get("/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
       const vm = response.data;
       store.model = vm.model;
@@ -46,8 +43,8 @@ const pollGame = () => {
 };
 
 const startGame = () => {
-  axios
-    .post(getUrl() + "/api/games/" + route.params.id + "/start")
+  axiosClient
+    .post("/api/games/" + route.params.id + "/start")
     .then((response) => {
       console.log(response.data);
       router.push({ name: "GAME", params: { id: route.params.id } });

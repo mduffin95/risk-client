@@ -19,9 +19,8 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import JoinModal from "../components/JoinModal.vue";
-import { getUrl } from "../utils";
+import { axiosClient } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { useRouter } from 'vue-router';
 import { useProgrammatic } from '@oruga-ui/oruga-next'
@@ -31,8 +30,8 @@ const router = useRouter();
 const store = useGameStore();
 
 const newGame = () => {
-  axios
-    .post(getUrl() + "/api/games")
+  axiosClient
+    .post("/api/games")
     .then((response) => {
       goToGame(response.data);
     })
@@ -57,8 +56,8 @@ const goToGame = (id) => {
   );
   // write to store
   // store.id = id;
-  axios
-    .put(getUrl() + "/api/games/" + id + "/players/" + store.playerName)
+  axiosClient
+    .put("/api/games/" + id + "/players/" + store.playerName)
     .then(() =>
       router.push({
         name: "LOBBY",

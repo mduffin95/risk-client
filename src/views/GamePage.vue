@@ -33,10 +33,9 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import TokenMarker from "../components/TokenMarker.vue";
 import MoveModal from "../components/MoveModal.vue";
-import { getUrl } from "../utils";
+import { axiosClient, sendDraft, sendAttack } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
 // import { useRouter } from "vue-router";
@@ -61,7 +60,7 @@ const clicked = (territory) => {
   switch (store.model.phase) {
     case "DRAFT":
     case "ALLDRAFT":
-      draft(territory);
+      sendDraft(route.params.id, territory.name);
       break;
     case "ATTACK":
       attack(territory);
@@ -77,17 +76,6 @@ const clicked = (territory) => {
   }
 };
 
-const draft = (territory) => {
-  const draft_data = {
-    territory: territory.name,
-  }
-  axios
-    .post(getUrl() + "/api/games/" + route.params.id + "/turn/draft", draft_data)
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
 const attack = (territory) => {
   const currentPlayer = store.model.currentPlayer;
   if (
@@ -95,16 +83,7 @@ const attack = (territory) => {
     store.lastSelected.player.name == currentPlayer &&
     territory.player.name != currentPlayer
   ) {
-    console.log("ATTACK");
-    const attack_data = {
-      from: store.lastSelected.name,
-      to: territory.name,
-    };
-    axios
-      .post(getUrl() + "/api/games/" + route.params.id + "/turn/attack", attack_data)
-      .catch((error) => {
-        console.log(error);
-      });
+    sendAttack(route.params.id, store.lastSelected.name, territory.name);
     store.lastSelected = null;
     if (store.model.phase == "MOVE") {
       store.modal();
@@ -141,8 +120,8 @@ const fortifyWithUnits = (from, to, units) => {
     units: units,
   };
   store.lastSelected = null;
-  axios
-    .post(getUrl() + "/api/games/" + route.params.id + "/turn/fortify", fortify_data)
+  axiosClient
+    .post("/api/games/" + route.params.id + "/turn/fortify", fortify_data)
     .then((response) => {
       store.model = response.data;
     })
@@ -155,8 +134,8 @@ const move = (unitsToMove) => {
   // store.moveModalActive = true;
   console.log(unitsToMove);
 
-  axios
-    .post(getUrl() + "/api/games/" + route.params.id + "/turn/move", {
+  axiosClient
+    .post("/api/games/" + route.params.id + "/turn/move", {
       units: unitsToMove,
     })
     .then((response) => {
@@ -179,7 +158,7 @@ const modal = () => {
 };
 
 const endTurn = () => {
-  axios.post(getUrl() + "/api/games/" + route.params.id + "/turn/end").catch((error) => {
+  axiosClient.post("/api/games/" + route.params.id + "/turn/end").catch((error) => {
     console.log(error);
   });
 };
@@ -187,8 +166,8 @@ const endTurn = () => {
 const pollGame = () => {
   console.log("poll")
   console.log(store.actionCount)
-  axios
-    .get(getUrl() + "/api/games/" + route.params.id + "/game/" + store.actionCount)
+  axiosClient
+    .get("/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
       // TODO: Remove duplication
       const vm = response.data;
