@@ -10,7 +10,7 @@
         Units to place: {{ store.model.unitsToPlace }}
       </p>
       <p v-if="store.model.error != null">Error: {{ store.model.error }}</p>
-      <o-button size="medium" variant="primary" @click="endTurn()">
+      <o-button v-if="store.playerName == store.model.currentPlayer" size="medium" variant="primary" @click="endTurn()">
         End Turn
       </o-button>
     </div>
