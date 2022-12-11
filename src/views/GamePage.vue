@@ -2,7 +2,7 @@
   <div>
     <div>
       <p v-if="store.playerName == store.model.currentPlayer">
-        Your turn
+        Your turn ({{ store.playerColor }})
       </p>
       <p v-else>Current player: {{ store.model.currentPlayer }}</p>
       <p>Phase: {{ store.model.phase }}</p>
@@ -74,9 +74,7 @@ const attack = (territory) => {
   ) {
     sendAttack(route.params.id, store.lastSelected.name, territory.name);
     store.lastSelected = null;
-    // if (store.model.phase == "MOVE") {
-    //   modal();
-    // }
+
   } else if (territory.player.name == currentPlayer) {
     store.lastSelected = territory;
   }
@@ -157,8 +155,15 @@ const pollGame = () => {
     .get("/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
       const vm = response.data;
-      store.model = vm.model;
-      store.actionCount = vm.actionCount;
+      if (store.actionCount != vm.actionCount) {
+        // something has changed
+        store.model = vm.model;
+        store.actionCount = vm.actionCount;
+        // trigger the move modal if in the move phase
+        if (store.model.phase == "MOVE") {
+          modal();
+        }
+      }
       console.log(vm);
       pollGame();
     });

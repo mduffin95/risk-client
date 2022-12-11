@@ -58,12 +58,15 @@ const goToGame = (id) => {
   // store.id = id;
   axiosClient
     .put("/api/games/" + id + "/players/" + store.playerName)
-    .then(() =>
+    .then((response) => {
+      var player = response.data;
+      store.playerColor = player.color;
+      console.log(player);
       router.push({
         name: "LOBBY",
         params: { id: id },
       })
-    )
+    })
     .catch((error) => {
       console.log(error);
     });
