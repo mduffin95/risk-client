@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <p v-if="store.playerName == store.model.currentPlayer">
+      <p v-if="isCurrentPlayer()">
         Your turn ({{ store.playerColor }})
       </p>
       <p v-else>Current player: {{ store.model.currentPlayer }}</p>
@@ -10,7 +10,7 @@
         Units to place: {{ store.model.unitsToPlace }}
       </p>
       <p v-if="store.model.error != null">Error: {{ store.model.error }}</p>
-      <o-button v-if="store.playerName == store.model.currentPlayer" size="medium" variant="primary" @click="endTurn()">
+      <o-button v-if="isCurrentPlayer()" size="medium" variant="primary" @click="endTurn()">
         End Turn
       </o-button>
     </div>
@@ -44,6 +44,10 @@ import { useRoute } from 'vue-router'
 const { oruga } = useProgrammatic();
 const route = useRoute();
 const store = useGameStore();
+
+function isCurrentPlayer() {
+  return store.playerName == store.model.currentPlayer
+}
 
 const clicked = (territory) => {
   switch (store.model.phase) {
@@ -160,7 +164,7 @@ const pollGame = () => {
         store.model = vm.model;
         store.actionCount = vm.actionCount;
         // trigger the move modal if in the move phase
-        if (store.model.phase == "MOVE") {
+        if (store.model.phase == "MOVE" && isCurrentPlayer()) {
           modal();
         }
       }
