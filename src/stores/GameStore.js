@@ -10,7 +10,6 @@ export const useGameStore = defineStore("game", {
         return { playerName, playerColor, model, lastSelected, actionCount }
     },
     persist: {
-        storage: sessionStorage,
-        paths: ['playerName'],
+        paths: ['playerName', 'playerColor'],
     },
 });

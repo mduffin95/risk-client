@@ -122,9 +122,9 @@ const fortifyWithUnits = (from, to, units) => {
   store.lastSelected = null;
   axiosClient
     .post("/api/games/" + route.params.id + "/turn/fortify", fortify_data)
-    .then((response) => {
-      store.model = response.data;
-    })
+    // .then((response) => {
+      // store.model = response.data;
+    // })
     .catch((error) => {
       console.log(error);
     });
@@ -132,9 +132,9 @@ const fortifyWithUnits = (from, to, units) => {
 
 const move = (unitsToMove) => {
   sendMove(route.params.id, unitsToMove)
-    .then((response) => {
-      store.model = response.data;
-    })
+    // .then((response) => {
+      // store.model = response.data;
+    // })
     .catch((error) => {
       console.log(error);
     });
