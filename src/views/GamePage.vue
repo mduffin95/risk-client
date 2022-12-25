@@ -50,6 +50,10 @@ function isCurrentPlayer() {
 }
 
 const clicked = (territory) => {
+  if (!isCurrentPlayer()) {
+    console.log("Not your turn!");
+    return;
+  }
   switch (store.model.phase) {
     case "DRAFT":
     case "ALLDRAFT":
