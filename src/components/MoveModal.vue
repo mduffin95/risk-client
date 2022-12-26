@@ -2,9 +2,11 @@
   <form action="">
     <div class="modal-card" style="width: auto">
       <section class="modal-card-body">
-        <o-field label="Units">
+        <o-field :label="label">
           <o-input
             type="number"
+            :min="min"
+            :max="max"
             v-model="units"
           >
           </o-input>
@@ -21,9 +23,14 @@
 export default {
   name: "MoveModal",
   emits: ["move-units"],
+  props: {
+    label: String,
+    min: Number,
+    max: Number
+  },
   data() {
     return {
-      units: 0
+      units: this.min
     }
   },
   methods: {

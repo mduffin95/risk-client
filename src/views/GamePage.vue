@@ -1,16 +1,19 @@
 <template>
   <div>
     <div>
-      <p v-if="isCurrentPlayer()">
-        Your turn ({{ store.playerColor }})
-      </p>
+      <p v-if="isCurrentPlayer()">Your turn ({{ store.playerColor }})</p>
       <p v-else>Current player: {{ store.model.currentPlayer }}</p>
       <p>Phase: {{ store.model.phase }}</p>
       <p v-if="store.model.phase == 'DRAFT' || store.model.phase == 'ALLDRAFT'">
         Units to place: {{ store.model.unitsToPlace }}
       </p>
       <p v-if="store.model.error != null">Error: {{ store.model.error }}</p>
-      <o-button v-if="isCurrentPlayer()" size="medium" variant="primary" @click="endTurn()">
+      <o-button
+        v-if="isCurrentPlayer()"
+        size="medium"
+        variant="primary"
+        @click="endTurn()"
+      >
         End Turn
       </o-button>
     </div>
@@ -38,15 +41,15 @@ import MoveModal from "../components/MoveModal.vue";
 import { axiosClient, sendDraft, sendAttack, sendMove } from "../utils";
 import { useGameStore } from "@/stores/GameStore";
 import { onMounted } from "vue";
-import { useProgrammatic } from '@oruga-ui/oruga-next'
-import { useRoute } from 'vue-router'
+import { useProgrammatic } from "@oruga-ui/oruga-next";
+import { useRoute } from "vue-router";
 
 const { oruga } = useProgrammatic();
 const route = useRoute();
 const store = useGameStore();
 
 function isCurrentPlayer() {
-  return store.playerName == store.model.currentPlayer
+  return store.playerName == store.model.currentPlayer;
 }
 
 const clicked = (territory) => {
@@ -63,7 +66,7 @@ const clicked = (territory) => {
       attack(territory);
       break;
     case "MOVE":
-      modal();
+      modal(store.model.modal);
       break;
     case "FORTIFY":
       fortify(territory);
@@ -82,7 +85,6 @@ const attack = (territory) => {
   ) {
     sendAttack(route.params.id, store.lastSelected.name, territory.name);
     store.lastSelected = null;
-
   } else if (territory.player.name == currentPlayer) {
     store.lastSelected = territory;
   }
@@ -101,6 +103,11 @@ const fortify = (territory) => {
     } else {
       oruga.modal.open({
         component: MoveModal,
+        props: {
+          label: "Fortify",
+          min: 0,
+          max: 100
+        },
         trapFocus: true,
         events: {
           "move-units": (units) =>
@@ -123,7 +130,7 @@ const fortifyWithUnits = (from, to, units) => {
   axiosClient
     .post("/api/games/" + route.params.id + "/turn/fortify", fortify_data)
     // .then((response) => {
-      // store.model = response.data;
+    // store.model = response.data;
     // })
     .catch((error) => {
       console.log(error);
@@ -133,16 +140,21 @@ const fortifyWithUnits = (from, to, units) => {
 const move = (unitsToMove) => {
   sendMove(route.params.id, unitsToMove)
     // .then((response) => {
-      // store.model = response.data;
+    // store.model = response.data;
     // })
     .catch((error) => {
       console.log(error);
     });
 };
 
-const modal = () => {
+const modal = (modalVM) => {
   oruga.modal.open({
     component: MoveModal,
+    props: {
+      label: modalVM.message,
+      min: modalVM.min,
+      max: modalVM.max
+    },
     trapFocus: true,
     events: {
       "move-units": move,
@@ -151,14 +163,16 @@ const modal = () => {
 };
 
 const endTurn = () => {
-  axiosClient.post("/api/games/" + route.params.id + "/turn/end").catch((error) => {
-    console.log(error);
-  });
+  axiosClient
+    .post("/api/games/" + route.params.id + "/turn/end")
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const pollGame = () => {
-  console.log("poll")
-  console.log(store.actionCount)
+  console.log("poll");
+  console.log(store.actionCount);
   axiosClient
     .get("/api/games/" + route.params.id + "/game/" + store.actionCount)
     .then((response) => {
@@ -169,7 +183,7 @@ const pollGame = () => {
         store.actionCount = vm.actionCount;
         // trigger the move modal if in the move phase
         if (store.model.phase == "MOVE" && isCurrentPlayer()) {
-          modal();
+          modal(store.model.modal);
         }
       }
       console.log(vm);
