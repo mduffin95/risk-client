@@ -60,7 +60,7 @@ const clicked = (territory) => {
   switch (store.model.phase) {
     case "DRAFT":
     case "ALLDRAFT":
-      sendDraft(route.params.id, territory.name);
+      sendDraft(route.params.id, store.playerName, territory.name);
       break;
     case "ATTACK":
       attack(territory);
@@ -83,7 +83,7 @@ const attack = (territory) => {
     store.lastSelected.player.name == currentPlayer &&
     territory.player.name != currentPlayer
   ) {
-    sendAttack(route.params.id, store.lastSelected.name, territory.name);
+    sendAttack(route.params.id, store.playerName, store.lastSelected.name, territory.name);
     store.lastSelected = null;
   } else if (territory.player.name == currentPlayer) {
     store.lastSelected = territory;
@@ -111,7 +111,7 @@ const fortify = (territory) => {
         trapFocus: true,
         events: {
           "move-units": (units) =>
-            fortifyWithUnits(store.lastSelected.name, territory.name, units),
+            fortifyWithUnits(store.playerName, store.lastSelected.name, territory.name, units),
         },
       });
     }
@@ -120,8 +120,9 @@ const fortify = (territory) => {
   }
 };
 
-const fortifyWithUnits = (from, to, units) => {
+const fortifyWithUnits = (player, from, to, units) => {
   const fortify_data = {
+    requestingPlayer: player,
     from: from,
     to: to,
     units: units,
@@ -138,7 +139,8 @@ const fortifyWithUnits = (from, to, units) => {
 };
 
 const move = (unitsToMove) => {
-  sendMove(route.params.id, unitsToMove)
+  const currentPlayer = store.model.currentPlayer;
+  sendMove(route.params.id, currentPlayer, unitsToMove)
     // .then((response) => {
     // store.model = response.data;
     // })
@@ -164,7 +166,7 @@ const modal = (modalVM) => {
 
 const endTurn = () => {
   axiosClient
-    .post("/api/games/" + route.params.id + "/turn/end")
+    .post("/api/games/" + route.params.id + "/turn/end", { requestingPlayer: store.playerName })
     .catch((error) => {
       console.log(error);
     });
