@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="control-panel">
       <p v-if="isCurrentPlayer()">Your turn ({{ store.playerColor }})</p>
       <p v-else>Current player: {{ store.model.currentPlayer }}</p>
       <p>Phase: {{ store.model.phase }}</p>
@@ -204,14 +204,17 @@ onMounted(() => {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
+}
+.control-panel {
+  float: left;
 }
 .map-container {
   position: relative;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 70%;
 }
 .map {
   width: 100%;
